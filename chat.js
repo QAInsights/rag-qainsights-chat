@@ -1,5 +1,5 @@
 (function() {
-  const API_URL = 'https://qainsights-blog-rag.onrender.com/api/chat'; // Render backend endpoint
+  const API_URL = 'https://bkxj2tjign.us-east-1.awsapprunner.com/api/chat'; // Render backend endpoint
   const STORAGE_KEY = 'dosa_chat_history';
 
   const bubble   = document.getElementById('dosa-bubble');

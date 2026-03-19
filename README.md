@@ -23,7 +23,7 @@ python -m http.server 3000
 ### Production Setup
 Update `API_URL` in `chat.js` before deploying:
 ```javascript
-const API_URL = 'https://qainsights-blog-rag.onrender.com/api/chat';
+const API_URL = 'https://bkxj2tjign.us-east-1.awsapprunner.com/api/chat';
 ```
 
 ### GitHub Pages Deployment
