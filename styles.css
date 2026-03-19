@@ -1,0 +1,618 @@
+/* ── Page shell (dev preview only) ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #0f1117;
+  color: #e2e8f0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-label {
+  position: fixed;
+  top: 20px; left: 50%;
+  transform: translateX(-50%);
+  background: #1e2130;
+  border: 1px solid #2d3148;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  padding: 6px 16px;
+  border-radius: 20px;
+  letter-spacing: 0.05em;
+}
+.preview-label span { color: #f97316; }
+
+/* ── Widget Styles ── */
+/* ── CSS custom properties ── */
+#dosa-chat-root {
+  /* Dark mode (default) */
+  --c-bg:        #000000;
+  --c-surface:   #0a0a0a;
+  --c-border:    #1a1a1a;
+  --c-accent:    #00ff41;
+  --c-accent-dim:#00cc33;
+  --c-metric:    #ff0080;
+  --c-text:      #ffffff;
+  --c-muted:     #666666;
+  --c-user-bg:   #1a1a1a;
+  --c-user-text: #00ff41;
+  --c-bot-bg:    transparent;
+  --c-bot-text:  #e0e0e0;
+  --c-grid:      #0d0d0d;
+  
+  /* Light mode */
+  --c-light-bg:        #ffffff;
+  --c-light-surface:   #f8f9fa;
+  --c-light-border:    #e9ecef;
+  --c-light-accent:    #0066cc;
+  --c-light-accent-dim:#0052a3;
+  --c-light-metric:    #cc0066;
+  --c-light-text:      #212529;
+  --c-light-muted:     #6c757d;
+  --c-light-user-bg:   #e9ecef;
+  --c-light-user-text: #0066cc;
+  --c-light-bot-bg:    transparent;
+  --c-light-bot-text:  #495057;
+  --c-light-grid:      #f1f3f4;
+  
+  --radius:      2px;
+  --font-mono:   'Inconsolata', monospace;
+  --font-sans:   'Inter', sans-serif;
+  --shadow:      none;
+}
+
+/* Light mode styles */
+#dosa-chat-root.light {
+  --c-bg:        var(--c-light-bg);
+  --c-surface:   var(--c-light-surface);
+  --c-border:    var(--c-light-border);
+  --c-accent:    var(--c-light-accent);
+  --c-accent-dim:var(--c-light-accent-dim);
+  --c-metric:    var(--c-light-metric);
+  --c-text:      var(--c-light-text);
+  --c-muted:     var(--c-light-muted);
+  --c-user-bg:   var(--c-light-user-bg);
+  --c-user-text: var(--c-light-user-text);
+  --c-bot-bg:    var(--c-light-bot-bg);
+  --c-bot-text:  var(--c-light-bot-text);
+  --c-grid:      var(--c-light-grid);
+}
+
+/* ── Bubble button ── */
+#dosa-bubble {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  width: 56px; height: 56px;
+  border-radius: var(--radius);
+  background: var(--c-bg);
+  border: 2px solid var(--c-accent);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s ease-out;
+  z-index: 99999;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-accent);
+}
+#dosa-bubble::before {
+  content: 'QUERY';
+  letter-spacing: 0.1em;
+}
+#dosa-bubble:active { transform: scale(.94); }
+#dosa-bubble.open::before { content: 'CLOSE'; }
+
+/* ── Unread badge ── */
+#dosa-badge {
+  position: absolute;
+  top: -3px; right: -3px;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid var(--c-bg);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  color: #fff;
+  display: none;
+  align-items: center; justify-content: center;
+}
+#dosa-badge.visible { display: flex; }
+
+/* ── Chat window ── */
+#dosa-window {
+  position: fixed;
+  bottom: 88px; right: 24px;
+  width: 480px;
+  height: 640px;
+  background: var(--c-bg);
+  border: 2px solid var(--c-accent);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  z-index: 99998;
+  overflow: hidden;
+  transform: translateY(8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .2s ease-out, opacity .2s;
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 1px, var(--c-grid) 1px, var(--c-grid) 2px),
+    repeating-linear-gradient(90deg, transparent, transparent 1px, var(--c-grid) 1px, var(--c-grid) 2px);
+  background-size: 20px 20px;
+}
+#dosa-window.open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Header ── */
+#dosa-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 2px solid var(--c-accent);
+  background: var(--c-surface);
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  position: relative;
+}
+#dosa-header::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: var(--c-accent);
+}
+.dosa-avatar {
+  width: 36px; height: 36px;
+  border-radius: var(--radius);
+  background: var(--c-bg);
+  border: 1px solid var(--c-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-accent);
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.dosa-header-info { flex: 1; min-width: 0; }
+.dosa-header-name {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-accent);
+  line-height: 1.2;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.dosa-header-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--c-muted);
+  margin-top: 4px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+.dosa-header-status::before {
+  content: '[';
+  color: var(--c-accent);
+}
+.dosa-header-status::after {
+  content: ']';
+  color: var(--c-accent);
+}
+.dosa-status-dot {
+  width: 6px; height: 6px;
+  border-radius: 0;
+  background: var(--c-accent);
+  animation: blink 1.5s infinite;
+}
+@keyframes blink {
+  0%, 49%, 100% { opacity: 1; }
+  50%, 99% { opacity: 0.3; }
+}
+/* Header buttons - consistent styling */
+#dosa-clear-btn,
+#dosa-theme-btn {
+  background: transparent;
+  border: 1px solid var(--c-accent);
+  color: var(--c-accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all .15s;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: fit-content;
+  white-space: nowrap;
+  height: 32px;
+  box-sizing: border-box;
+}
+#dosa-theme-btn:hover,
+#dosa-clear-btn:hover { 
+  background: var(--c-accent);
+  color: var(--c-bg);
+}
+#dosa-theme-btn:active,
+#dosa-clear-btn:active {
+  transform: scale(.96);
+}
+
+/* ── Messages ── */
+#dosa-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-behavior: smooth;
+}
+#dosa-messages::-webkit-scrollbar { width: 4px; }
+#dosa-messages::-webkit-scrollbar-track { background: transparent; }
+#dosa-messages::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+
+/* ── Message bubbles ── */
+.dosa-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 85%;
+  animation: msgIn .2s ease;
+}
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.dosa-msg.user { align-self: flex-end; align-items: flex-end; }
+.dosa-msg.bot  { align-self: flex-start; align-items: flex-start; }
+
+.dosa-msg-bubble {
+  padding: 14px 18px;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.65;
+  word-break: break-word;
+  font-weight: 400;
+  border-left: 3px solid transparent;
+}
+.dosa-msg.user .dosa-msg-bubble {
+  background: var(--c-user-bg);
+  color: var(--c-user-text);
+  border-left-color: var(--c-accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+}
+.dosa-msg.user .dosa-msg-bubble::before {
+  content: '> ';
+  color: var(--c-accent);
+  opacity: 0.6;
+}
+.dosa-msg.bot .dosa-msg-bubble {
+  background: var(--c-bot-bg);
+  color: var(--c-bot-text);
+  border-left-color: var(--c-metric);
+  border-right: 1px solid rgba(255,0,128,.1);
+}
+.dosa-msg-time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--c-muted);
+  margin-top: 4px;
+  padding: 0 4px;
+  letter-spacing: 0.05em;
+}
+.dosa-msg-time::before {
+  content: '[';
+  opacity: 0.5;
+}
+.dosa-msg-time::after {
+  content: ']';
+  opacity: 0.5;
+}
+
+/* ── Typing indicator ── */
+.dosa-typing .dosa-msg-bubble {
+  padding: 12px 16px;
+}
+.dosa-typing-dots {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.dosa-typing-dots span {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--c-muted);
+  animation: dotBounce 1.2s infinite;
+}
+.dosa-typing-dots span:nth-child(2) { animation-delay: .2s; }
+.dosa-typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dotBounce {
+  0%, 60%, 100% { transform: translateY(0);   opacity: .4; }
+  30%            { transform: translateY(-5px); opacity: 1; }
+}
+
+/* ── Welcome message ── */
+.dosa-welcome {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  animation: msgIn .3s ease;
+  border: 1px solid rgba(0,255,65,.1);
+  border-radius: var(--radius);
+  background: rgba(0,255,65,.02);
+}
+.dosa-welcome-icon {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--c-accent);
+  border-radius: var(--radius);
+  background: rgba(0,255,65,.03);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--c-accent);
+  text-align: center;
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+}
+.dosa-welcome-icon::before {
+  content: 'QAInsights Knowledge Base\ASTATUS: ONLINE | 600+ ARTICLES\ARESPONSE: <100ms';
+  white-space: pre;
+}
+.dosa-welcome h3 {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+}
+.dosa-welcome h3::before {
+  content: '// ';
+  color: var(--c-accent);
+}
+.dosa-welcome p {
+  display: none;
+}
+
+/* ── Suggested questions ── */
+.dosa-suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+}
+.dosa-suggestion-btn {
+  background: transparent;
+  border: 1px solid rgba(0,255,65,.2);
+  border-left: 3px solid var(--c-accent);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: left;
+  transition: all .15s ease-out;
+  position: relative;
+}
+.dosa-suggestion-btn::before {
+  content: '$ ';
+  color: var(--c-accent);
+  margin-right: 4px;
+}
+.dosa-suggestion-btn:hover {
+  border-color: var(--c-accent);
+  transform: translateX(4px);
+}
+.dosa-suggestion-btn:active {
+  transform: translateX(2px);
+}
+
+/* ── Input area ── */
+#dosa-input-area {
+  padding: 16px 20px 20px;
+  border-top: 2px solid var(--c-border);
+  background: var(--c-surface);
+  flex-shrink: 0;
+}
+#dosa-input-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+#dosa-input {
+  flex: 1;
+  background: rgba(0,255,65,.02);
+  border: 1px solid rgba(0,255,65,.2);
+  border-left: 3px solid var(--c-accent);
+  border-radius: var(--radius);
+  color: var(--c-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 12px 14px;
+  resize: none;
+  height: 44px;
+  max-height: 100px;
+  outline: none;
+  transition: all .15s ease-out;
+  line-height: 1.5;
+  font-weight: 600;
+}
+#dosa-input:focus { 
+  border-color: var(--c-accent);
+}
+#dosa-input::placeholder { 
+  color: var(--c-muted);
+  font-family: var(--font-mono);
+}
+#dosa-input::placeholder::before {
+  content: '$ ';
+}
+#dosa-send {
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  background: transparent;
+  border: 1px solid var(--c-accent);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: all .15s ease-out;
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--c-accent);
+}
+#dosa-send::before {
+  content: 'RUN';
+  letter-spacing: 0.1em;
+}
+#dosa-send:hover  { 
+  background: var(--c-accent);
+  color: var(--c-bg);
+}
+#dosa-send:active { 
+  transform: scale(.96);
+}
+#dosa-send:disabled { 
+  background: transparent;
+  border-color: var(--c-muted);
+  color: var(--c-muted);
+  cursor: not-allowed;
+}
+#dosa-send:disabled::before {
+  content: '...';
+}
+#dosa-send svg { pointer-events: none; }
+
+#dosa-footer-note {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--c-muted);
+  text-align: left;
+  margin-top: 8px;
+  opacity: .6;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
+#dosa-footer-note::before {
+  content: '// ';
+  color: var(--c-accent);
+  opacity: 0.5;
+}
+
+/* ── Markdown rendering ── */
+.dosa-msg-bubble p  { margin: 0 0 6px; }
+.dosa-msg-bubble p:last-child { margin-bottom: 0; }
+.dosa-msg-bubble h1,
+.dosa-msg-bubble h2,
+.dosa-msg-bubble h3 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text);
+  margin: 8px 0 4px;
+}
+.dosa-msg-bubble h1:first-child,
+.dosa-msg-bubble h2:first-child,
+.dosa-msg-bubble h3:first-child { margin-top: 0; }
+.dosa-msg-bubble ul,
+.dosa-msg-bubble ol {
+  padding-left: 16px;
+  margin: 4px 0;
+}
+.dosa-msg-bubble li { margin: 2px 0; }
+.dosa-msg-bubble code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--c-user-bg);
+  border: 1px solid var(--c-border);
+  padding: 2px 6px;
+  border-radius: var(--radius);
+  color: var(--c-accent);
+  font-weight: 600;
+}
+.dosa-msg-bubble pre {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-left: 3px solid var(--c-accent);
+  border-radius: var(--radius);
+  padding: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+.dosa-msg-bubble pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--c-text);
+  font-size: 12px;
+  font-weight: 400;
+}
+.dosa-msg-bubble strong { font-weight: 600; color: var(--c-text); }
+.dosa-msg-bubble em     { font-style: italic; color: var(--c-muted); }
+.dosa-msg-bubble a { 
+  color: var(--c-accent);
+  text-decoration: underline;
+  font-weight: 600;
+  transition: all .15s;
+}
+.dosa-msg-bubble a:hover { 
+  opacity: 0.8;
+}
+.dosa-msg-bubble blockquote {
+  border-left: 3px solid var(--c-metric);
+  margin: 8px 0;
+  padding: 8px 12px;
+  color: var(--c-muted);
+  font-style: normal;
+  background: var(--c-surface);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.dosa-msg-bubble hr {
+  border: none;
+  border-top: 1px solid var(--c-border);
+  margin: 8px 0;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  #dosa-window {
+    bottom: 0; right: 0;
+    width: 100vw;
+    height: 75vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  #dosa-bubble { bottom: 20px; right: 20px; }
+  #dosa-header {
+    gap: 12px;
+  }
+  #dosa-clear-btn,
+  #dosa-theme-btn {
+    font-size: 10px;
+    padding: 4px 10px;
+    height: 28px;
+  }
+}

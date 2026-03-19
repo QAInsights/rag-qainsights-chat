@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>dosa.dev Chat Widget — Dev Preview</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="styles.css" rel="stylesheet"/>
+</head>
+<body>
+  <!-- <p class="preview-label">dev preview · <span>localhost:8080</span></p> -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+  <div id="dosa-chat-root">
+    <!-- Bubble -->
+    <button id="dosa-bubble" aria-label="Open chat">
+      <div id="dosa-badge"></div>
+    </button>
+
+    <!-- Window -->
+    <div id="dosa-window" role="dialog" aria-label="Chat with dosa.dev assistant">
+
+      <!-- Header -->
+      <div id="dosa-header">
+        <div class="dosa-avatar">QA</div>
+        <div class="dosa-header-info">
+          <div class="dosa-header-name">QAInsights Knowledge Base</div>
+          <div class="dosa-header-status">
+            <div class="dosa-status-dot"></div>
+            <span>ONLINE</span>
+          </div>
+        </div>
+        <button id="dosa-theme-btn" title="Toggle theme">DARK MODE</button>
+        <button id="dosa-clear-btn" title="Clear chat history">RESET</button>
+      </div>
+
+      <!-- Messages -->
+      <div id="dosa-messages">
+        <div class="dosa-welcome">
+          <div class="dosa-welcome-icon"></div>
+          <h3>QUERY EXAMPLES</h3>
+        </div>
+        <div class="dosa-suggestions">
+          <button class="dosa-suggestion-btn">Who is the author of this blog?</button>
+          <button class="dosa-suggestion-btn">What are the main topics covered?</button>
+          <button class="dosa-suggestion-btn">QA testing best practices?</button>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <div id="dosa-input-area">
+        <div id="dosa-input-row">
+          <textarea id="dosa-input" placeholder="$ query QAInsights knowledge base..." rows="1"></textarea>
+          <button id="dosa-send" aria-label="Send"></button>
+        </div>
+        <div id="dosa-footer-note">RAG-powered by QAInsights Knowledge Base</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="chat.js"></script>
+
+</body>
+</html>
