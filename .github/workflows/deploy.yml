@@ -31,14 +31,6 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       with:
         path: '.'
-        # Exclude unnecessary files from deployment
-        exclude: |-
-          .git
-          .github
-          .gitignore
-          *.md
-          netlify.toml
-          vercel.json
 
   deploy:
     environment:
