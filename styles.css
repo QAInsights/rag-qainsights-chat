@@ -1,32 +1,18 @@
-/* ── Page shell (dev preview only) ── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: #0f1117;
-  color: #e2e8f0;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.preview-label {
-  position: fixed;
-  top: 20px; left: 50%;
-  transform: translateX(-50%);
-  background: #1e2130;
-  border: 1px solid #2d3148;
-  color: #64748b;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  letter-spacing: 0.05em;
-}
-.preview-label span { color: #f97316; }
+/* ── Page shell (dev preview only — NOT injected into WordPress) ── */
 
 /* ── Widget Styles ── */
 /* ── CSS custom properties ── */
+#dosa-chat-root *,
+#dosa-chat-root *::before,
+#dosa-chat-root *::after {
+  box-sizing: border-box;
+}
+
 #dosa-chat-root {
+  /* Scoped box-sizing so WordPress global styles don't interfere */
+  box-sizing: border-box;
+  /* Own stacking context — sits above WordPress content but is self-contained */
+  isolation: isolate;
   /* Dark mode (default) */
   --c-bg:        #000000;
   --c-surface:   #0a0a0a;
@@ -150,6 +136,8 @@ body {
   transform: translateY(0) scale(1);
   opacity: 1;
   pointer-events: all;
+  /* Ensure all children are interactive when open */
+  touch-action: manipulation;
 }
 
 /* ── Header ── */
@@ -171,7 +159,7 @@ body {
   height: 1px;
   background: var(--c-accent);
 }
-.dosa-avatar {
+#dosa-chat-root .dosa-avatar {
   width: 36px; height: 36px;
   border-radius: var(--radius);
   background: var(--c-bg);
@@ -184,8 +172,8 @@ body {
   flex-shrink: 0;
   letter-spacing: 0.05em;
 }
-.dosa-header-info { flex: 1; min-width: 0; }
-.dosa-header-name {
+#dosa-chat-root .dosa-header-info { flex: 1; min-width: 0; }
+#dosa-chat-root .dosa-header-name {
   font-family: var(--font-mono);
   font-size: 15px;
   font-weight: 700;
@@ -194,7 +182,7 @@ body {
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.dosa-header-status {
+#dosa-chat-root .dosa-header-status {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -205,21 +193,21 @@ body {
   font-weight: 400;
   letter-spacing: 0.05em;
 }
-.dosa-header-status::before {
+#dosa-chat-root .dosa-header-status::before {
   content: '[';
   color: var(--c-accent);
 }
-.dosa-header-status::after {
+#dosa-chat-root .dosa-header-status::after {
   content: ']';
   color: var(--c-accent);
 }
-.dosa-status-dot {
+#dosa-chat-root .dosa-status-dot {
   width: 6px; height: 6px;
   border-radius: 0;
   background: var(--c-accent);
-  animation: blink 1.5s infinite;
+  animation: dosa-blink 1.5s infinite;
 }
-@keyframes blink {
+@keyframes dosa-blink {
   0%, 49%, 100% { opacity: 1; }
   50%, 99% { opacity: 0.3; }
 }
@@ -271,20 +259,20 @@ body {
 #dosa-messages::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
 
 /* ── Message bubbles ── */
-.dosa-msg {
+#dosa-chat-root .dosa-msg {
   display: flex;
   flex-direction: column;
   max-width: 85%;
-  animation: msgIn .2s ease;
+  animation: dosa-msgIn .2s ease;
 }
-@keyframes msgIn {
+@keyframes dosa-msgIn {
   from { opacity: 0; transform: translateY(12px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.dosa-msg.user { align-self: flex-end; align-items: flex-end; }
-.dosa-msg.bot  { align-self: flex-start; align-items: flex-start; }
+#dosa-chat-root .dosa-msg.user { align-self: flex-end; align-items: flex-end; }
+#dosa-chat-root .dosa-msg.bot  { align-self: flex-start; align-items: flex-start; }
 
-.dosa-msg-bubble {
+#dosa-chat-root .dosa-msg-bubble {
   padding: 14px 18px;
   border-radius: var(--radius);
   font-family: var(--font-sans);
@@ -294,7 +282,7 @@ body {
   font-weight: 400;
   border-left: 3px solid transparent;
 }
-.dosa-msg.user .dosa-msg-bubble {
+#dosa-chat-root .dosa-msg.user .dosa-msg-bubble {
   background: var(--c-user-bg);
   color: var(--c-user-text);
   border-left-color: var(--c-accent);
@@ -302,18 +290,18 @@ body {
   font-size: 13px;
   font-weight: 600;
 }
-.dosa-msg.user .dosa-msg-bubble::before {
+#dosa-chat-root .dosa-msg.user .dosa-msg-bubble::before {
   content: '> ';
   color: var(--c-accent);
   opacity: 0.6;
 }
-.dosa-msg.bot .dosa-msg-bubble {
+#dosa-chat-root .dosa-msg.bot .dosa-msg-bubble {
   background: var(--c-bot-bg);
   color: var(--c-bot-text);
   border-left-color: var(--c-metric);
   border-right: 1px solid rgba(255,0,128,.1);
 }
-.dosa-msg-time {
+#dosa-chat-root .dosa-msg-time {
   font-family: var(--font-mono);
   font-size: 10px;
   color: var(--c-muted);
@@ -321,49 +309,49 @@ body {
   padding: 0 4px;
   letter-spacing: 0.05em;
 }
-.dosa-msg-time::before {
+#dosa-chat-root .dosa-msg-time::before {
   content: '[';
   opacity: 0.5;
 }
-.dosa-msg-time::after {
+#dosa-chat-root .dosa-msg-time::after {
   content: ']';
   opacity: 0.5;
 }
 
 /* ── Typing indicator ── */
-.dosa-typing .dosa-msg-bubble {
+#dosa-chat-root .dosa-typing .dosa-msg-bubble {
   padding: 12px 16px;
 }
-.dosa-typing-dots {
+#dosa-chat-root .dosa-typing-dots {
   display: flex;
   gap: 4px;
   align-items: center;
 }
-.dosa-typing-dots span {
+#dosa-chat-root .dosa-typing-dots span {
   width: 6px; height: 6px;
   border-radius: 50%;
   background: var(--c-muted);
-  animation: dotBounce 1.2s infinite;
+  animation: dosa-dotBounce 1.2s infinite;
 }
-.dosa-typing-dots span:nth-child(2) { animation-delay: .2s; }
-.dosa-typing-dots span:nth-child(3) { animation-delay: .4s; }
-@keyframes dotBounce {
+#dosa-chat-root .dosa-typing-dots span:nth-child(2) { animation-delay: .2s; }
+#dosa-chat-root .dosa-typing-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dosa-dotBounce {
   0%, 60%, 100% { transform: translateY(0);   opacity: .4; }
   30%            { transform: translateY(-5px); opacity: 1; }
 }
 
 /* ── Welcome message ── */
-.dosa-welcome {
+#dosa-chat-root .dosa-welcome {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 20px;
-  animation: msgIn .3s ease;
+  animation: dosa-msgIn .3s ease;
   border: 1px solid rgba(0,255,65,.1);
   border-radius: var(--radius);
   background: rgba(0,255,65,.02);
 }
-.dosa-welcome-icon {
+#dosa-chat-root .dosa-welcome-icon {
   width: 100%;
   padding: 14px;
   border: 1px solid var(--c-accent);
@@ -376,11 +364,11 @@ body {
   line-height: 1.6;
   letter-spacing: 0.05em;
 }
-.dosa-welcome-icon::before {
+#dosa-chat-root .dosa-welcome-icon::before {
   content: 'QAInsights Knowledge Base\ASTATUS: ONLINE | 600+ ARTICLES\ARESPONSE: <100ms';
   white-space: pre;
 }
-.dosa-welcome h3 {
+#dosa-chat-root .dosa-welcome h3 {
   font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 700;
@@ -389,22 +377,22 @@ body {
   text-transform: uppercase;
   text-align: center;
 }
-.dosa-welcome h3::before {
+#dosa-chat-root .dosa-welcome h3::before {
   content: '// ';
   color: var(--c-accent);
 }
-.dosa-welcome p {
+#dosa-chat-root .dosa-welcome p {
   display: none;
 }
 
 /* ── Suggested questions ── */
-.dosa-suggestions {
+#dosa-chat-root .dosa-suggestions {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding: 0;
 }
-.dosa-suggestion-btn {
+#dosa-chat-root .dosa-suggestion-btn {
   background: transparent;
   border: 1px solid rgba(0,255,65,.2);
   border-left: 3px solid var(--c-accent);
@@ -419,16 +407,16 @@ body {
   transition: all .15s ease-out;
   position: relative;
 }
-.dosa-suggestion-btn::before {
+#dosa-chat-root .dosa-suggestion-btn::before {
   content: '$ ';
   color: var(--c-accent);
   margin-right: 4px;
 }
-.dosa-suggestion-btn:hover {
+#dosa-chat-root .dosa-suggestion-btn:hover {
   border-color: var(--c-accent);
   transform: translateX(4px);
 }
-.dosa-suggestion-btn:active {
+#dosa-chat-root .dosa-suggestion-btn:active {
   transform: translateX(2px);
 }
 
@@ -528,26 +516,26 @@ body {
 }
 
 /* ── Markdown rendering ── */
-.dosa-msg-bubble p  { margin: 0 0 6px; }
-.dosa-msg-bubble p:last-child { margin-bottom: 0; }
-.dosa-msg-bubble h1,
-.dosa-msg-bubble h2,
-.dosa-msg-bubble h3 {
+#dosa-chat-root .dosa-msg-bubble p  { margin: 0 0 6px; }
+#dosa-chat-root .dosa-msg-bubble p:last-child { margin-bottom: 0; }
+#dosa-chat-root .dosa-msg-bubble h1,
+#dosa-chat-root .dosa-msg-bubble h2,
+#dosa-chat-root .dosa-msg-bubble h3 {
   font-size: 13.5px;
   font-weight: 600;
   color: var(--c-text);
   margin: 8px 0 4px;
 }
-.dosa-msg-bubble h1:first-child,
-.dosa-msg-bubble h2:first-child,
-.dosa-msg-bubble h3:first-child { margin-top: 0; }
-.dosa-msg-bubble ul,
-.dosa-msg-bubble ol {
+#dosa-chat-root .dosa-msg-bubble h1:first-child,
+#dosa-chat-root .dosa-msg-bubble h2:first-child,
+#dosa-chat-root .dosa-msg-bubble h3:first-child { margin-top: 0; }
+#dosa-chat-root .dosa-msg-bubble ul,
+#dosa-chat-root .dosa-msg-bubble ol {
   padding-left: 16px;
   margin: 4px 0;
 }
-.dosa-msg-bubble li { margin: 2px 0; }
-.dosa-msg-bubble code {
+#dosa-chat-root .dosa-msg-bubble li { margin: 2px 0; }
+#dosa-chat-root .dosa-msg-bubble code {
   font-family: var(--font-mono);
   font-size: 11px;
   background: var(--c-user-bg);
@@ -557,7 +545,7 @@ body {
   color: var(--c-accent);
   font-weight: 600;
 }
-.dosa-msg-bubble pre {
+#dosa-chat-root .dosa-msg-bubble pre {
   background: var(--c-surface);
   border: 1px solid var(--c-border);
   border-left: 3px solid var(--c-accent);
@@ -566,7 +554,7 @@ body {
   overflow-x: auto;
   margin: 8px 0;
 }
-.dosa-msg-bubble pre code {
+#dosa-chat-root .dosa-msg-bubble pre code {
   background: none;
   border: none;
   padding: 0;
@@ -574,18 +562,22 @@ body {
   font-size: 12px;
   font-weight: 400;
 }
-.dosa-msg-bubble strong { font-weight: 600; color: var(--c-text); }
-.dosa-msg-bubble em     { font-style: italic; color: var(--c-muted); }
-.dosa-msg-bubble a { 
+#dosa-chat-root .dosa-msg-bubble strong { font-weight: 600; color: var(--c-text); }
+#dosa-chat-root .dosa-msg-bubble em     { font-style: italic; color: var(--c-muted); }
+#dosa-chat-root .dosa-msg-bubble a { 
   color: var(--c-accent);
   text-decoration: underline;
   font-weight: 600;
   transition: all .15s;
+  pointer-events: auto;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
-.dosa-msg-bubble a:hover { 
+#dosa-chat-root .dosa-msg-bubble a:hover { 
   opacity: 0.8;
 }
-.dosa-msg-bubble blockquote {
+#dosa-chat-root .dosa-msg-bubble blockquote {
   border-left: 3px solid var(--c-metric);
   margin: 8px 0;
   padding: 8px 12px;
@@ -596,7 +588,7 @@ body {
   font-family: var(--font-mono);
   font-size: 11px;
 }
-.dosa-msg-bubble hr {
+#dosa-chat-root .dosa-msg-bubble hr {
   border: none;
   border-top: 1px solid var(--c-border);
   margin: 8px 0;
@@ -634,18 +626,18 @@ body {
     grid-template-columns: auto 1fr auto auto;
   }
   
-  .dosa-avatar {
+  #dosa-chat-root .dosa-avatar {
     width: 32px;
     height: 32px;
     font-size: 10px;
   }
   
-  .dosa-header-name {
+  #dosa-chat-root .dosa-header-name {
     font-size: 12px;
     line-height: 1.1;
   }
   
-  .dosa-header-status {
+  #dosa-chat-root .dosa-header-status {
     font-size: 9px;
     margin-top: 2px;
   }
@@ -663,17 +655,17 @@ body {
     gap: 12px;
   }
   
-  .dosa-welcome-icon {
+  #dosa-chat-root .dosa-welcome-icon {
     padding: 10px;
     font-size: 9px;
   }
   
-  .dosa-welcome h3 {
+  #dosa-chat-root .dosa-welcome h3 {
     font-size: 10px;
     margin: 8px 0;
   }
   
-  .dosa-suggestion-btn {
+  #dosa-chat-root .dosa-suggestion-btn {
     font-size: 11px;
     padding: 8px 10px;
     margin: 4px 0;
@@ -703,12 +695,12 @@ body {
     margin-top: 8px;
   }
   
-  .dosa-msg-bubble {
+  #dosa-chat-root .dosa-msg-bubble {
     font-size: 12px;
     padding: 10px 12px;
   }
   
-  .dosa-msg-time {
+  #dosa-chat-root .dosa-msg-time {
     font-size: 9px;
   }
 }
@@ -725,13 +717,13 @@ body {
     padding: 10px 12px;
   }
   
-  .dosa-avatar {
+  #dosa-chat-root .dosa-avatar {
     width: 28px;
     height: 28px;
     font-size: 9px;
   }
   
-  .dosa-header-name {
+  #dosa-chat-root .dosa-header-name {
     font-size: 11px;
   }
   
@@ -743,7 +735,7 @@ body {
     min-width: 40px;
   }
   
-  .dosa-suggestion-btn {
+  #dosa-chat-root .dosa-suggestion-btn {
     font-size: 10px;
     padding: 6px 8px;
   }

@@ -1,0 +1,61 @@
+<!-- ══════════════════════════════════════════════════════════
+     QAInsights Chat Widget — WordPress embed snippet
+     Paste into a Custom HTML block or wp_footer hook.
+
+     Direct injection — no iframe. CSS is fully scoped under
+     #dosa-chat-root so it won't interfere with your theme.
+     ══════════════════════════════════════════════════════════ -->
+
+<!-- Fonts (skip if your theme already loads Inter) -->
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Widget styles -->
+<link href="https://qainsights.github.io/rag-qainsights-chat/styles.css" rel="stylesheet">
+
+<!-- Markdown parser -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+<!-- Widget markup -->
+<div id="dosa-chat-root">
+  <button id="dosa-bubble" aria-label="Open chat">
+    <div id="dosa-badge"></div>
+  </button>
+
+  <div id="dosa-window" role="dialog" aria-label="Chat with QAInsights assistant">
+    <div id="dosa-header">
+      <div class="dosa-avatar">QA</div>
+      <div class="dosa-header-info">
+        <div class="dosa-header-name">QAInsights Knowledge Base</div>
+        <div class="dosa-header-status">
+          <div class="dosa-status-dot"></div>
+          <span>ONLINE</span>
+        </div>
+      </div>
+      <button id="dosa-theme-btn" title="Toggle theme">DARK MODE</button>
+      <button id="dosa-clear-btn" title="Clear chat history">RESET</button>
+    </div>
+
+    <div id="dosa-messages">
+      <div class="dosa-welcome">
+        <div class="dosa-welcome-icon"></div>
+        <h3>QUERY EXAMPLES</h3>
+      </div>
+      <div class="dosa-suggestions">
+        <button class="dosa-suggestion-btn">Who is the author of this blog?</button>
+        <button class="dosa-suggestion-btn">Tell me about QAInsights</button>
+        <button class="dosa-suggestion-btn">What are the main topics covered?</button>
+      </div>
+    </div>
+
+    <div id="dosa-input-area">
+      <div id="dosa-input-row">
+        <textarea id="dosa-input" placeholder="$ query QAInsights knowledge base..." rows="1"></textarea>
+        <button id="dosa-send" aria-label="Send"></button>
+      </div>
+      <div id="dosa-footer-note">RAG-powered by QAInsights Knowledge Base</div>
+    </div>
+  </div>
+</div>
+
+<!-- Widget logic -->
+<script src="https://qainsights.github.io/rag-qainsights-chat/chat.js"></script>
